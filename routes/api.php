@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\noticiasController;
 use Illuminate\Support\Facades\Auth;
 
 // Route::get('/', function () {
@@ -19,8 +20,11 @@ use Illuminate\Support\Facades\Auth;
 // });
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'registro']);
-Route::get('lista', [AuthController::class, 'listado']);
-Route::get('mostrar', [AuthController::class, 'index'])-> name('admin.index');
+Route::get('listado', [AuthController::class, 'listado']);
+//Route::get('mostrar', [AuthController::class, 'index'])-> name('admin.index');
+Route::get('listadoNoticas', [noticiasController::class, 'listar']);
+Route::post('registrar', [noticiasController::class, 'registro']);
+Route::put("actualizar/{id}",[CategoriasController::class,'actualizar']);
 
 Route::get('admin', [AdminController::class, 'index'])
 ->middleware('auth.admin')
