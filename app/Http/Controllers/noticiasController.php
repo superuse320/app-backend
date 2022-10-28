@@ -42,8 +42,8 @@ public function registro(Request $request)
 } 
 public function   mostrar(noticias $post) {
 
-  $imagen=noticias::find($post);
-  return $imagen;
+  $dato=noticias::find($post)->get();
+  return $dato;
   
 }
 
