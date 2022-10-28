@@ -34,7 +34,7 @@ class AuthController extends BaseController
             $request->validate([
                 'name'=>'required',
                 'email'=>'required|email|unique:users',
-                'password'=>'required|confirmed',
+                'password'=>'required',
             ]);
 
             $user=new User();
