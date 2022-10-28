@@ -22,9 +22,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'registro']);
 Route::get('listado', [AuthController::class, 'listado']);
 //Route::get('mostrar', [AuthController::class, 'index'])-> name('admin.index');
-Route::get('listadoNoticas', [noticiasController::class, 'listar']);
-Route::post('registrar', [noticiasController::class, 'registro']);
-Route::put("actualizar/{id}",[CategoriasController::class,'actualizar']);
+
 
 Route::get('admin', [AdminController::class, 'index'])
 ->middleware('auth.admin')
@@ -33,3 +31,6 @@ Route::get('admin', [AdminController::class, 'index'])
 Route::middleware('auth:sanctum')->group( function () {
     Route::resource('blogs', BlogController::class);
 });
+Route::get('noticias/{id}', [noticiasController::class, 'mostrar']);
+Route::post('noticias', [noticiasController::class, 'registro']);
+Route::put("noticias/{id}",[CategoriasController::class,'actualizar']);

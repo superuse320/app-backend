@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\DB;
 use App\Models\noticias;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -29,12 +30,26 @@ public function registro(Request $request)
       'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
   
     ]);
-    $image_path = $request->file('imagen')->store('imagen', 'public');
+    $image_path = $request->file('image')->store('imagen', 'public');
      $data = noticias::create([
-        'imagen' => $image_path,
+        
+        'title' => $request->title,
+        'description' => $request->description,
+        'category' => $request->category,
+        'image' => $image_path,
     ]);
     return response($data, Response::HTTP_CREATED);
 } 
+public function   mostrar(noticias $post) {
+
+  $imagen=noticias::find($post);
+  return $imagen;
+  
+}
+
+
+
+
 public function actualizar(Request $request, noticias $post) {
     $imagen = '';
     if ($request->hasFile('file')) {
@@ -52,12 +67,7 @@ public function actualizar(Request $request, noticias $post) {
     $post->update($postData);
    return True;
   }
-public function listar( ){
-    $noticias=noticias::all();
-    return $noticias;
 
-
-}  
   
     
 
