@@ -68,6 +68,15 @@ class AuthController extends BaseController
         return $users ;
         // return $this->sendResponse($users, 'User signed in');
     }
+    
+    
+    public function logout()
+    {
+
+        auth()->user()->tokens()->delete();
+        return ['message' => 'Ha cerrado sesión correctamente y el token se eliminó con éxito'
+        ];
+    }
 }
 
 
