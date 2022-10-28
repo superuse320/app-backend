@@ -48,7 +48,6 @@ class AuthController extends BaseController
             $user->assignRole('Usuario');
              return response()->json([
                 'ok'=>true,
-                'user'=>$user
              ]);
             }
 
