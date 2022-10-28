@@ -40,10 +40,11 @@ public function registro(Request $request)
     ]);
     return response($data, Response::HTTP_CREATED);
 } 
-public function   mostrar(noticias $post) {
+public function   mostrar(Request $request) {
 
-  $dato=noticias::find($post)->get();
-  return $dato;
+
+  $noticias=noticias::findOrFail($request->id);
+  return $noticias;
   
 }
 
