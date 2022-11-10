@@ -13,20 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('noticias', function (Blueprint $table) {
+        Schema::create('puestostrabajos', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('description');
-            $table->unsignedBigInteger('category_id');
+            $table->string('workplace');
+            $table->string('descripcion');
+
+            $table->unsignedBigInteger('trabajo_id');
+            $table->foreign('trabajo_id')->references('id')->on('trabajos');
             
-            $table->foreign('category_id')->references('id')->on('categorias');
-
-            $table->string('image');
-
-                        
 
             $table->timestamps();
-          
         });
     }
 
@@ -37,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('noticias');
+        Schema::dropIfExists('puestostrabajos');
     }
 };

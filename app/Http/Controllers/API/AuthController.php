@@ -46,9 +46,8 @@ class AuthController extends BaseController
             $token=$user->createToken('auth_token')->plainTextToken;
             $user->token=$token;
             $user->assignRole('Usuario');
-             return response()->json([
-                'ok'=>true,
-             ]);
+            return response()
+            -> json(true);
             }
 
     public function login(Request $request)
@@ -65,7 +64,8 @@ class AuthController extends BaseController
 
         $users = User::where('email', $request['email'])->firstOrFail();
         $users['token']=$users->createToken('auth_token')->plainTextToken;
-        return $users ;
+        return response()
+        -> json(true);
         // return $this->sendResponse($users, 'User signed in');
     }
 }

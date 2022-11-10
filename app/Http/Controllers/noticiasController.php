@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\DB;
+
+use Illuminate\Support\Facades\DB;
 use App\Models\noticias;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\AssignOp\Concat;
 use Symfony\Component\HttpFoundation\Response;
 class noticiasController extends Controller
 {
@@ -20,34 +22,45 @@ class noticiasController extends Controller
 
 
 
-public function registro(Request $request)
+public function registronoticias(Request $request)
 {
 
   $this->validate($request,[
       'title' => 'required',
       'description' => 'required',
-      'category' => 'required',
+      'category_id' => 'required',
       'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
   
     ]);
-    $image_path = $request->file('image')->store('imagen', 'public');
+    $image_path = $request->file('image')->store('public/imagen');
+    $nombreImagen=basename($image_path);
      $data = noticias::create([
         
         'title' => $request->title,
         'description' => $request->description,
-        'category' => $request->category,
-        'image' => $image_path,
+        'category_id' => $request->category_id,
+        'image' => $nombreImagen,
     ]);
+    
     return response($data, Response::HTTP_CREATED);
+
+    
 } 
-public function   mostrar(Request $request) {
+public function buscar($id) {
 
 
-  $noticias=noticias::findOrFail($request->id);
-  return $noticias;
+$noticias=noticias::select('id','description','category_id','image')->where("id","=",$id)->get();
   
-}
+return $noticias; 
 
+  
+ 
+}
+public function listar(){
+
+  $noticias=DB::select('call mostrar_noticias  ');
+  return $noticias;  
+}
 
 
 
@@ -62,14 +75,24 @@ public function actualizar(Request $request, noticias $post) {
     } else {
       $imagen = $post->image;
     }
-
-    $postData = ['title' => $request->title, 'description' => $request->description, 'category' => $request->category, 'imagen' => $imagen];
+    $imagen = $request->file('image')->store('imagen','public');
+    
+    $postData = ['title' => $request->title, 'description' => $request->description, 'category_id' => $request->category_id, 'imagen' => "/app-backend/storage/app/public/".$imagen];
 
     $post->update($postData);
    return True;
   }
-
+public function eliminar($id) {
   
+  
+    $post = noticias::find($id);
+    $image=noticias::where("id","=",$id)->get('image');
+    $image_path = $image[0]->image;
+    //return $image_path;
+    Storage::delete('public/imagen/' . $image_path);
+    $post->delete();
+  }
+}
     
 
 //   $imagen = time() . '.' . $request->file->extension();
@@ -83,4 +106,3 @@ public function actualizar(Request $request, noticias $post) {
 
 
 
-}
