@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2022 a las 03:59:41
--- Versión del servidor: 10.4.24-MariaDB
--- Versión de PHP: 8.1.6
+-- Tiempo de generación: 10-11-2022 a las 07:56:53
+-- Versión del servidor: 10.4.25-MariaDB
+-- Versión de PHP: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -21,6 +21,48 @@ SET time_zone = "+00:00";
 -- Base de datos: `aplicacion`
 --
 
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `mostrar_noticias` ()   SELECT noticias.id,title,description,categorias.name as category ,CONCAT('/app-backend/storage/app/public/imagen/',image) image from noticias inner JOIN categorias on noticias.category_id=categorias.id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `mostrar_publicacion_noticia` ()   SELECT categorias.name as Categoria, noticias.title as Noticia ,noticias.description as Descripcion ,group_CONCAT(estudiantes.name,': ',publicaciones.comment SEPARATOR ';') as 'comentarios de estudiantes', COUNT(CASE publicaciones.like WHEN 0 THEN NULL ELSE publicaciones.like END) as reacciones FROM `publicaciones` inner join noticias on publicaciones.noticia_id=noticias.id INNER join estudiantes on publicaciones.estudiante_id=estudiantes.id INNER JOIN categorias on noticias.category_id=categorias.id GROUP BY noticias.id$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `areas`
+--
+
+CREATE TABLE `areas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `number_jobs` int(11) NOT NULL,
+  `entry_time` time NOT NULL,
+  `exit_time` time NOT NULL,
+  `price` double(8,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `asignacionestrabajos`
+--
+
+CREATE TABLE `asignacionestrabajos` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `trabajador_id` bigint(20) UNSIGNED NOT NULL,
+  `puestostrabajo_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -34,6 +76,68 @@ CREATE TABLE `blogs` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categorias`
+--
+
+CREATE TABLE `categorias` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `categorias`
+--
+
+INSERT INTO `categorias` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'DEPORTES', NULL, NULL),
+(2, 'TRABAJOS', NULL, NULL),
+(3, 'OTRAS ACTIVIDADES', NULL, NULL),
+(4, 'CLASES', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `encargados`
+--
+
+CREATE TABLE `encargados` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estudiantes`
+--
+
+CREATE TABLE `estudiantes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `student_card` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `estudiantes`
+--
+
+INSERT INTO `estudiantes` (`id`, `name`, `student_card`, `email`, `created_at`, `updated_at`) VALUES
+(1, 'JOSE ENRIQUE', '12312312', 'jose@gmail.com', '2022-11-10 10:10:34', '2022-11-10 10:10:34'),
+(2, 'juan jose', '123123', 'juan@gmail.com', '2022-11-10 10:10:34', '2022-11-10 10:10:34'),
+(3, 'jhon catacora', '123123123', 'jhon@gmail.com', '2022-11-10 10:11:29', '2022-11-10 10:11:29');
 
 -- --------------------------------------------------------
 
@@ -126,11 +230,21 @@ CREATE TABLE `noticias` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_id` bigint(20) UNSIGNED NOT NULL,
   `image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `noticias`
+--
+
+INSERT INTO `noticias` (`id`, `title`, `description`, `category_id`, `image`, `created_at`, `updated_at`) VALUES
+(3, 'CLASES POR ZOOM', 'Clases online mediante Zoom. Zoom para Clases Virtuales (3°', 4, '213', '2022-11-10 06:25:48', '2022-11-10 06:25:48'),
+(4, 'CLASES POR MEET ', 'Conecta a tu comunidad educativa con una solución de videollamadas para dictar clases, organizar reuniones de padres y profesores, ofrecer cursos de ...', 4, '1123', '2022-11-08 06:25:48', '2022-11-10 06:25:48'),
+(5, 'DEPORTES UAB', 'Descubre la tradición en investigación, formación, apoyo a los deportistas y transferencia en deporte de la UAB, con una destacada posición en los rankings ...\r\n', 1, '123', '2022-11-10 06:26:46', '2022-11-10 06:26:46'),
+(6, 'juegos uab', 'mmmmmmmmm', 3, '4Fcsv0iSZiz1xnxH44I0FWfLPeOlI2hEzKZxUCR2.jpg', '2022-11-10 10:45:16', '2022-11-10 10:45:16');
 
 -- --------------------------------------------------------
 
@@ -218,6 +332,47 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `publicaciones`
+--
+
+CREATE TABLE `publicaciones` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `noticia_id` bigint(20) UNSIGNED NOT NULL,
+  `estudiante_id` bigint(20) UNSIGNED NOT NULL,
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `like` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `publicaciones`
+--
+
+INSERT INTO `publicaciones` (`id`, `noticia_id`, `estudiante_id`, `comment`, `like`, `created_at`, `updated_at`) VALUES
+(1, 4, 3, 'CREO QUE ES LO MEJOR PASAR VIRTUALES', 1, '2022-11-10 06:27:24', '2022-11-10 06:27:24'),
+(2, 4, 1, 'NO ME PARECE QUE ESTE BIEN ', 0, '2022-11-10 06:27:24', '2022-11-10 06:27:24'),
+(3, 5, 3, 'GENIAL ME ENCANTA EL DEPORTE', 0, '2022-11-10 06:28:22', '2022-11-10 06:28:22'),
+(4, 3, 3, 'nnnnnn', 1, '2022-11-10 10:42:32', '2022-11-10 10:42:32');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `puestostrabajos`
+--
+
+CREATE TABLE `puestostrabajos` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `workplace` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `trabajo_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `roles`
 --
 
@@ -259,6 +414,37 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `trabajadores`
+--
+
+CREATE TABLE `trabajadores` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name_last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `student_card` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `trabajos`
+--
+
+CREATE TABLE `trabajos` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `area_id` bigint(20) UNSIGNED NOT NULL,
+  `encargado_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `users`
 --
 
@@ -294,10 +480,43 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 --
 
 --
+-- Indices de la tabla `areas`
+--
+ALTER TABLE `areas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `asignacionestrabajos`
+--
+ALTER TABLE `asignacionestrabajos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `asignacionestrabajos_trabajador_id_foreign` (`trabajador_id`),
+  ADD KEY `asignacionestrabajos_puestostrabajo_id_foreign` (`puestostrabajo_id`);
+
+--
 -- Indices de la tabla `blogs`
 --
 ALTER TABLE `blogs`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `categorias`
+--
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `encargados`
+--
+ALTER TABLE `encargados`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `estudiantes`
+--
+ALTER TABLE `estudiantes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `estudiantes_email_unique` (`email`);
 
 --
 -- Indices de la tabla `failed_jobs`
@@ -330,7 +549,8 @@ ALTER TABLE `model_has_roles`
 -- Indices de la tabla `noticias`
 --
 ALTER TABLE `noticias`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `noticias_category_id_foreign` (`category_id`);
 
 --
 -- Indices de la tabla `password_resets`
@@ -354,6 +574,21 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
+-- Indices de la tabla `publicaciones`
+--
+ALTER TABLE `publicaciones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `publicaciones_noticia_id_foreign` (`noticia_id`),
+  ADD KEY `publicaciones_estudiante_id_foreign` (`estudiante_id`);
+
+--
+-- Indices de la tabla `puestostrabajos`
+--
+ALTER TABLE `puestostrabajos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `puestostrabajos_trabajo_id_foreign` (`trabajo_id`);
+
+--
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -368,6 +603,20 @@ ALTER TABLE `role_has_permissions`
   ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
 
 --
+-- Indices de la tabla `trabajadores`
+--
+ALTER TABLE `trabajadores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `trabajos`
+--
+ALTER TABLE `trabajos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `trabajos_area_id_foreign` (`area_id`),
+  ADD KEY `trabajos_encargado_id_foreign` (`encargado_id`);
+
+--
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
@@ -379,10 +628,40 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `areas`
+--
+ALTER TABLE `areas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `asignacionestrabajos`
+--
+ALTER TABLE `asignacionestrabajos`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `blogs`
 --
 ALTER TABLE `blogs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `categorias`
+--
+ALTER TABLE `categorias`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `encargados`
+--
+ALTER TABLE `encargados`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `estudiantes`
+--
+ALTER TABLE `estudiantes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `failed_jobs`
@@ -400,7 +679,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de la tabla `noticias`
 --
 ALTER TABLE `noticias`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `permissions`
@@ -415,10 +694,34 @@ ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
+-- AUTO_INCREMENT de la tabla `publicaciones`
+--
+ALTER TABLE `publicaciones`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `puestostrabajos`
+--
+ALTER TABLE `puestostrabajos`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `trabajadores`
+--
+ALTER TABLE `trabajadores`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `trabajos`
+--
+ALTER TABLE `trabajos`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
@@ -429,6 +732,13 @@ ALTER TABLE `users`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `asignacionestrabajos`
+--
+ALTER TABLE `asignacionestrabajos`
+  ADD CONSTRAINT `asignacionestrabajos_puestostrabajo_id_foreign` FOREIGN KEY (`puestostrabajo_id`) REFERENCES `puestostrabajos` (`id`),
+  ADD CONSTRAINT `asignacionestrabajos_trabajador_id_foreign` FOREIGN KEY (`trabajador_id`) REFERENCES `trabajadores` (`id`);
 
 --
 -- Filtros para la tabla `model_has_permissions`
@@ -443,11 +753,37 @@ ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
+-- Filtros para la tabla `noticias`
+--
+ALTER TABLE `noticias`
+  ADD CONSTRAINT `noticias_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categorias` (`id`);
+
+--
+-- Filtros para la tabla `publicaciones`
+--
+ALTER TABLE `publicaciones`
+  ADD CONSTRAINT `publicaciones_estudiante_id_foreign` FOREIGN KEY (`estudiante_id`) REFERENCES `estudiantes` (`id`),
+  ADD CONSTRAINT `publicaciones_noticia_id_foreign` FOREIGN KEY (`noticia_id`) REFERENCES `noticias` (`id`);
+
+--
+-- Filtros para la tabla `puestostrabajos`
+--
+ALTER TABLE `puestostrabajos`
+  ADD CONSTRAINT `puestostrabajos_trabajo_id_foreign` FOREIGN KEY (`trabajo_id`) REFERENCES `trabajos` (`id`);
+
+--
 -- Filtros para la tabla `role_has_permissions`
 --
 ALTER TABLE `role_has_permissions`
   ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `trabajos`
+--
+ALTER TABLE `trabajos`
+  ADD CONSTRAINT `trabajos_area_id_foreign` FOREIGN KEY (`area_id`) REFERENCES `areas` (`id`),
+  ADD CONSTRAINT `trabajos_encargado_id_foreign` FOREIGN KEY (`encargado_id`) REFERENCES `encargados` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
